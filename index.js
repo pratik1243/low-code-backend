@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const multer = require("multer");
 const cors = require("cors");
 const port = 8000;
-app.use(cors());
+app.use(cors({ origin: true }));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 const pageSchema = new mongoose.Schema({
   page_id: {
@@ -26,11 +28,16 @@ const pageSchema = new mongoose.Schema({
   },
 });
 
-const PageSchemaData = new mongoose.model(
-  "Create_Page",
-  pageSchema,
-  "Create_Page"
-);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+const PageSchemaData = new mongoose.model("Create_Page", pageSchema, "Create_Page");
 
 app.post("/save-page", async (req, res) => {
   try {
@@ -84,6 +91,12 @@ app.post("/edit-page", async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: "server error" });
   }
+});
+
+app.post('/upload-image', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  const imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
+  res.status(200).json({ message: 'File uploaded successfully', imageUrl });
 });
 
 mongoose
