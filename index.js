@@ -28,6 +28,17 @@ const pageSchema = new mongoose.Schema({
   },
 });
 
+const countrySchema = new mongoose.Schema({
+  label: {
+    type: String,
+    require: true,
+  },
+  value: {
+    type: String,
+    require: true,
+  },
+});
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -36,8 +47,10 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
+
 const upload = multer({ storage: storage });
 const PageSchemaData = new mongoose.model("Create_Page", pageSchema, "Create_Page");
+const CountrySchemaData = new mongoose.model("Countries_List", countrySchema, "Countries_List");
 
 app.post("/save-page", async (req, res) => {
   try {
@@ -68,6 +81,18 @@ app.post("/pages-list", async (req, res) => {
     return res.status(200).json({
       message: "Page Fetched Successfully",
       responseData: users,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "server error" });
+  }
+});
+
+app.get("/countries-list", async (req, res) => {
+  try {
+    const countries = await CountrySchemaData.find();
+    return res.status(200).json({
+      message: "Countries Fetched Successfully",
+      responseData: countries,
     });
   } catch (err) {
     return res.status(500).json({ error: "server error" });
