@@ -46,11 +46,7 @@ const countrySchema = new mongoose.Schema({
 });
 
 const authenticationSchema = new mongoose.Schema({
-  first_name: {
-    type: String,
-    require: true,
-  },
-  last_name: {
+  full_name: {
     type: String,
     require: true,
   },
@@ -79,9 +75,21 @@ const storage = multer.diskStorage({
 
 const db = mongoose.connection;
 const upload = multer({ storage: storage });
-const PageSchemaData = new mongoose.model("Create_Page", pageSchema, "Create_Page");
-const CountrySchemaData = new mongoose.model("Countries_List", countrySchema, "Countries_List");
-const AuthenticationSchemaData = new mongoose.model("users-data", authenticationSchema, "users-data");
+const PageSchemaData = new mongoose.model(
+  "Create_Page",
+  pageSchema,
+  "Create_Page"
+);
+const CountrySchemaData = new mongoose.model(
+  "Countries_List",
+  countrySchema,
+  "Countries_List"
+);
+const AuthenticationSchemaData = new mongoose.model(
+  "users-data",
+  authenticationSchema,
+  "users-data"
+);
 
 db.once("open", async () => {
   console.log("MongoDB connected");
@@ -90,8 +98,7 @@ db.once("open", async () => {
 app.post("/register", async (req, res) => {
   try {
     const users = new AuthenticationSchemaData({
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
+      full_name: req.body.full_name,
       email: req.body.email,
       password: req.body.password,
       request_user_id: req.body.request_user_id,
@@ -102,7 +109,9 @@ app.post("/register", async (req, res) => {
       password: req.body.password,
     }).then(async (userExist) => {
       if (userExist) {
-        res.status(500).json({ message: "User email and password already exists" });
+        res
+          .status(500)
+          .json({ message: "User email and password already exists" });
       } else {
         await users.save();
         return res.status(200).json({ message: "User added succesfully" });
@@ -122,7 +131,7 @@ app.post("/login", async (req, res) => {
       if (userExist) {
         const jsonwebtoken = jwt.sign(
           { email: req.body.email, password: req.body.password },
-           process.env.JWT_SECRET,
+          process.env.JWT_SECRET,
           { expiresIn: "24h" }
         );
         return res.status(200).json({
@@ -130,7 +139,7 @@ app.post("/login", async (req, res) => {
           responseData: {
             token: jsonwebtoken,
             request_user_id: userExist?.request_user_id,
-            user_name: `${userExist?.first_name} ${userExist?.last_name}`,
+            user_name: `${userExist?.full_name}`,
           },
         });
       } else {
@@ -182,6 +191,21 @@ app.post("/pages-list", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/get-icons", authenticateToken, (req, res) => {
+  try {
+    const FaIcons = require("react-icons/fa");
+    const MdIcons = require("react-icons/md");
+    const HiIcons = require("react-icons/hi");
+    const AiIcons = require("react-icons/ai");
+    const Icons = {...FaIcons, ...MdIcons, ...HiIcons, AiIcons}
+    const iconsData = Object.keys(Icons).map((el) => el);
+    const filterIcons = !req.body.icon_name ? [] : iconsData.filter((el) => el.toLowerCase().includes(req.body.icon_name.toLowerCase()));
+    res.status(200).json(filterIcons);
+  } catch (err) {
+    return res.status(500).json({ error: "server error" });
+  }
+});
+
 app.get("/countries-list", authenticateToken, async (req, res) => {
   try {
     const countries = await CountrySchemaData.find();
@@ -211,8 +235,12 @@ app.post("/edit-page", authenticateToken, async (req, res) => {
   }
 });
 
-app.post("/upload-image", authenticateToken, upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+app.post(
+  "/upload-image",
+  authenticateToken,
+  upload.single("image"),
+  (req, res) => {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     const imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
     res.status(200).json({ message: "File uploaded successfully", imageUrl });
   }
@@ -240,7 +268,9 @@ app.post("/create-collection", authenticateToken, async (req, res) => {
       return res.status(500).json({ error: "collectionName is required" });
     }
     if (collections.length > 0) {
-      return res.status(500).json({ error: `Collection '${collectionName}' already exists` });
+      return res
+        .status(500)
+        .json({ error: `Collection '${collectionName}' already exists` });
     }
     await db.createCollection(collectionName);
     res.json({
