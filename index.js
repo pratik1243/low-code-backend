@@ -197,9 +197,12 @@ app.post("/get-icons", authenticateToken, (req, res) => {
     const MdIcons = require("react-icons/md");
     const HiIcons = require("react-icons/hi");
     const AiIcons = require("react-icons/ai");
-    const Icons = {...FaIcons, ...MdIcons, ...HiIcons, AiIcons}
+    const Icons = { ...FaIcons, ...MdIcons, ...HiIcons, AiIcons };
     const iconsData = Object.keys(Icons).map((el) => el);
-    const filterIcons = !req.body.icon_name ? [] : iconsData.filter((el) => el.toLowerCase().includes(req.body.icon_name.toLowerCase()));
+    const filterData = iconsData.filter((el) =>
+      el.toLowerCase().includes(req.body.icon_name.toLowerCase())
+    );
+    const filterIcons = !req.body.icon_name ? [] : filterData;
     res.status(200).json(filterIcons);
   } catch (err) {
     return res.status(500).json({ error: "server error" });
