@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const multer = require("multer");
 const cors = require("cors");
 const authenticateToken = require("./middleware/auth");
 app.use(express.json());
@@ -15,7 +16,13 @@ const {
   login,
   register,
   pageList,
+  uploadImage,
+  getImageById,
+  getImages
 } = require("./controllers/controller");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 app.post("/register", register);
 
@@ -31,17 +38,22 @@ app.get("/countries-list", authenticateToken, countriesList);
 
 app.post("/edit-page", authenticateToken, editPage);
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/Low_Code_Portal", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("connected succesfully to mongodb");
-  })
-  .catch(() => {
-    console.log("failed connection to mongodb");
-  });
+app.post("/upload-image", authenticateToken, upload.single("image"), uploadImage);
+
+app.get("/image/:id", getImageById);
+
+app.get("/get-images", authenticateToken, getImages);
+
+mongoose.connect("mongodb://127.0.0.1:27017/Low_Code_Portal", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("connected succesfully to mongodb");
+})
+.catch(() => {
+  console.log("failed connection to mongodb");
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);

@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const PageSchemaData = require("../models/pageModel");
 const CountrySchemaData = require("../models/countryModel");
 const AuthenticationSchemaData = require("../models/authenticationModel");
+const ImageSchemaData = require("../models/imageModel");
 
 exports.register = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ exports.login = async (req, res) => {
     }).then(async (userExist) => {
       if (userExist) {
         const jsonwebtoken = jwt.sign(
-          { email: req.body.email, password: req.body.password },
+          { id: userExist._id,  email: userExist.email, password: userExist.password },
           process.env.JWT_SECRET,
           { expiresIn: "24h" }
         );
@@ -143,5 +144,43 @@ exports.editPage = async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: "server error" });
+  }
+};
+
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ error: "No user ID found in token" });
+    }
+    const newImage = new ImageSchemaData({
+      name: req.file.originalname,
+      img: req.file.buffer,
+      contentType: req.file.mimetype,
+      userId: req.user.id,
+    });
+    await newImage.save();
+    res.json({ message: "Image uploaded successfully", id: newImage._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getImageById = async (req, res) => {
+  try {
+    const image = await ImageSchemaData.findById(req.params.id);
+    if (!image) return res.status(404).json({ message: "Image not found" });
+    res.set("Content-Type", image.contentType);
+    res.send(image.img);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getImages = async (req, res) => {
+  try {
+    const images = await ImageSchemaData.find({ userId: req.user.id }).select("name _id");
+    res.json(images);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
