@@ -179,7 +179,7 @@ exports.getImageById = async (req, res) => {
 exports.getImages = async (req, res) => {
   try {
     const images = await ImageSchemaData.find({ userId: req.user.id }).select("name _id");
-    res.json(images);
+    res.json({ images: images, message: "Image Fetched Successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
