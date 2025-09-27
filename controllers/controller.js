@@ -1,4 +1,8 @@
 const jwt = require("jsonwebtoken");
+const FaIcons = require("react-icons/fa");
+const MdIcons = require("react-icons/md");
+const HiIcons = require("react-icons/hi");
+const AiIcons = require("react-icons/ai");
 const PageSchemaData = require("../models/pageModel");
 const CountrySchemaData = require("../models/countryModel");
 const AuthenticationSchemaData = require("../models/authenticationModel");
@@ -102,15 +106,9 @@ exports.pageList = async (req, res) => {
 
 exports.getIcons = (req, res) => {
   try {
-    const FaIcons = require("react-icons/fa");
-    const MdIcons = require("react-icons/md");
-    const HiIcons = require("react-icons/hi");
-    const AiIcons = require("react-icons/ai");
     const Icons = { ...FaIcons, ...MdIcons, ...HiIcons, AiIcons };
     const iconsData = Object.keys(Icons).map((el) => el);
-    const filterData = iconsData.filter((el) =>
-      el.toLowerCase().includes(req.body.icon_name.toLowerCase())
-    );
+    const filterData = iconsData.filter((el) => el.toLowerCase().includes(req.body.icon_name.toLowerCase()));
     const filterIcons = !req.body.icon_name ? [] : filterData;
     res.status(200).json(filterIcons);
   } catch (err) {
