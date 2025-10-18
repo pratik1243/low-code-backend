@@ -17,6 +17,10 @@ const pageSchema = new mongoose.Schema({
     type: Object,
     require: true,
   },
+  break_point: {
+    type: String,
+    require: true,
+  },
   request_user_id: {
     type: String,
     require: true,

@@ -43,7 +43,11 @@ exports.login = async (req, res) => {
     }).then(async (userExist) => {
       if (userExist) {
         const jsonwebtoken = jwt.sign(
-          { id: userExist._id,  email: userExist.email, password: userExist.password },
+          {
+            id: userExist._id,
+            email: userExist.email,
+            password: userExist.password,
+          },
           process.env.JWT_SECRET,
           { expiresIn: "24h" }
         );
@@ -81,7 +85,7 @@ exports.createPage = async (req, res) => {
   }
 };
 
-exports.pageList = async (req, res) => {
+exports.pageData = async (req, res) => {
   try {
     const filters = {};
     if (req.body.page_id) {
@@ -96,7 +100,29 @@ exports.pageList = async (req, res) => {
     const users = await PageSchemaData.find(filters);
     return res.status(200).json({
       message: "Page Fetched Successfully",
-      responseData: users,
+      responseData: {
+        _id: users[0]._id,
+        page_id: users[0].page_id,
+        page_name: users[0].page_name,
+        page_data: users[0]?.page_data[req.body.break_point],
+      },
+    });
+  } catch (err) {
+    console.log("errerr", err);
+    return res.status(500).json({ error: "server error" });
+  }
+};
+
+exports.pageList = async (req, res) => {
+  try {
+    const filters = {};
+    if (req.body.request_user_id) {
+      filters.request_user_id = req.body.request_user_id;
+    }
+    const users = await PageSchemaData.find(filters);
+    return res.status(200).json({
+      message: "Page Fetched Successfully",
+      responseData: users
     });
   } catch (err) {
     console.log("errerr", err);
@@ -108,7 +134,9 @@ exports.getIcons = (req, res) => {
   try {
     const Icons = { ...FaIcons, ...MdIcons, ...HiIcons, AiIcons };
     const iconsData = Object.keys(Icons).map((el) => el);
-    const filterData = iconsData.filter((el) => el.toLowerCase().includes(req.body.icon_name.toLowerCase()));
+    const filterData = iconsData.filter((el) =>
+      el.toLowerCase().includes(req.body.icon_name.toLowerCase())
+    );
     const filterIcons = !req.body.icon_name ? [] : filterData;
     res.status(200).json(filterIcons);
   } catch (err) {
@@ -176,7 +204,9 @@ exports.getImageById = async (req, res) => {
 
 exports.getImages = async (req, res) => {
   try {
-    const images = await ImageSchemaData.find({ userId: req.user.id }).select("name _id");
+    const images = await ImageSchemaData.find({ userId: req.user.id }).select(
+      "name _id"
+    );
     res.json({ images: images, message: "Image Fetched Successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -18,7 +18,8 @@ const {
   pageList,
   uploadImage,
   getImageById,
-  getImages
+  getImages,
+  pageData
 } = require("./controllers/controller");
 
 const storage = multer.memoryStorage();
@@ -31,6 +32,8 @@ app.post("/login", login);
 app.post("/save-page", authenticateToken, createPage);
 
 app.post("/pages-list", authenticateToken, pageList);
+
+app.post("/page-data", authenticateToken, pageData);
 
 app.post("/get-icons", authenticateToken, getIcons);
 
