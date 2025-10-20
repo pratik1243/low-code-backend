@@ -104,7 +104,7 @@ exports.pageData = async (req, res) => {
         _id: users[0]._id,
         page_id: users[0].page_id,
         page_name: users[0].page_name,
-        page_data: users[0]?.page_data[req.body.break_point],
+        page_data: req.body.break_point ? users[0]?.page_data[req.body.break_point] : users[0]?.page_data,
       },
     });
   } catch (err) {
@@ -166,7 +166,7 @@ exports.editPage = async (req, res) => {
       return res.status(400).json({ message: "Missing ID or data" });
     }
     return res.status(200).json({
-      message: "Page Edited Successfully",
+      message: "Changes Published Successfully",
     });
   } catch (err) {
     return res.status(500).json({ error: "server error" });
