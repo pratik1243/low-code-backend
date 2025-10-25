@@ -7,6 +7,7 @@ const PageSchemaData = require("../models/pageModel");
 const CountrySchemaData = require("../models/countryModel");
 const AuthenticationSchemaData = require("../models/authenticationModel");
 const ImageSchemaData = require("../models/imageModel");
+const fonts = require("google-fonts-complete");
 
 exports.register = async (req, res) => {
   try {
@@ -104,7 +105,10 @@ exports.pageData = async (req, res) => {
         _id: users[0]._id,
         page_id: users[0].page_id,
         page_name: users[0].page_name,
-        page_data: req.body.break_point ? users[0]?.page_data[req.body.break_point] : users[0]?.page_data,
+        font_family: users[0]?.page_data?.font_family,
+        page_data: req.body.break_point
+          ? users[0]?.page_data[req.body.break_point]
+          : users[0]?.page_data,
       },
     });
   } catch (err) {
@@ -122,7 +126,7 @@ exports.pageList = async (req, res) => {
     const users = await PageSchemaData.find(filters);
     return res.status(200).json({
       message: "Page Fetched Successfully",
-      responseData: users
+      responseData: users,
     });
   } catch (err) {
     console.log("errerr", err);
@@ -152,6 +156,19 @@ exports.countriesList = async (req, res) => {
       responseData: countries,
     });
   } catch (err) {
+    return res.status(500).json({ error: "server error" });
+  }
+};
+
+exports.fontsList = async (req, res) => {
+  try {
+    const fontsArray = [...Object.keys(fonts).map((el) => el), 'System-Ui', 'Sans-Serif'];
+    const filterData = fontsArray.filter((el) =>
+      el.toLowerCase().includes(req.body.font_name.toLowerCase())
+    );
+    const filterFonts = !req.body.font_name ? [] : filterData;
+    return res.status(200).json(filterFonts);
+  } catch (error) {
     return res.status(500).json({ error: "server error" });
   }
 };
