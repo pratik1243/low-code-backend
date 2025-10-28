@@ -8,7 +8,17 @@ const serverless = require("serverless-http");
 const authenticateToken = require("./middleware/auth");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://low-code-frontend-delta.vercel.app",
+    "http://localhost:3000"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
+app.options("*", cors());
 
 const {
   createPage,
