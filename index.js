@@ -4,7 +4,9 @@ const app = express();
 const mongoose = require("mongoose");
 const multer = require("multer");
 const cors = require("cors");
+const serverless = require("serverless-http");
 const authenticateToken = require("./middleware/auth");
+
 app.use(express.json());
 app.use(cors());
 
@@ -50,41 +52,19 @@ app.get("/api/image/:id", getImageById);
 
 app.get("/api/get-images", authenticateToken, getImages);
 
-// mongoose.connect(process.env.PROD_MONGO_URL, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => {
-//   console.log("connected succesfully to mongodb");
-// })
-// .catch(() => {
-//   console.log("failed connection to mongodb");
-// });
-
 let isConnected = false;
 
-async function connecLowCodeDB() {
+async function connectDB() {
+  if (isConnected) return;
   try {
-    await mongoose.connect(process.env.PROD_MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.PROD_MONGO_URL);
     isConnected = true;
-    console.log("connected succesfully to mongodb");
+    console.log("MongoDB Connected");
   } catch (error) {
-    console.log("failed connection to mongodb");
+    console.error("DB Error:", error);
   }
 }
 
-app.use((req, res, next) => {
-  if (isConnected) {
-    connecLowCodeDB();
-  }
-  next();
-});
+connectDB();
 
-module.exports = app;
-
-// app.listen(process.env.PORT, () => {
-//   console.log(`server started at ${process.env.PORT}`);
-// });
+module.exports.handler = serverless(app);
