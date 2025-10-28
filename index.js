@@ -20,7 +20,7 @@ const {
   getImageById,
   getImages,
   pageData,
-  fontsList
+  fontsList,
 } = require("./controllers/controller");
 
 const storage = multer.memoryStorage();
@@ -50,17 +50,41 @@ app.get("/image/:id", getImageById);
 
 app.get("/get-images", authenticateToken, getImages);
 
-mongoose.connect(process.env.PROD_MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("connected succesfully to mongodb");
-})
-.catch(() => {
-  console.log("failed connection to mongodb");
+// mongoose.connect(process.env.PROD_MONGO_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// })
+// .then(() => {
+//   console.log("connected succesfully to mongodb");
+// })
+// .catch(() => {
+//   console.log("failed connection to mongodb");
+// });
+
+let isConnected = false;
+
+async function connecLowCodeDB() {
+  try {
+    await mongoose.connect(process.env.PROD_MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = true;
+    console.log("connected succesfully to mongodb");
+  } catch (error) {
+    console.log("failed connection to mongodb");
+  }
+}
+
+app.use((req, res, next) => {
+  if (isConnected) {
+    connecLowCodeDB();
+  }
+  next();
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`server started at ${process.env.PORT}`);
-});
+module.exports = app;
+
+// app.listen(process.env.PORT, () => {
+//   console.log(`server started at ${process.env.PORT}`);
+// });
