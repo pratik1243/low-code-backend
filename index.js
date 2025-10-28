@@ -26,29 +26,29 @@ const {
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-app.post("/register", register);
+app.post("/api/register", register);
 
-app.post("/login", login);
+app.post("/api/login", login);
 
-app.post("/save-page", authenticateToken, createPage);
+app.post("/api/save-page", authenticateToken, createPage);
 
-app.post("/pages-list", authenticateToken, pageList);
+app.post("/api/pages-list", authenticateToken, pageList);
 
-app.post("/page-data", pageData);
+app.post("/api/page-data", pageData);
 
-app.post("/get-icons", authenticateToken, getIcons);
+app.post("/api/get-icons", authenticateToken, getIcons);
 
-app.post("/get-fonts", authenticateToken, fontsList);
+app.post("/api/get-fonts", authenticateToken, fontsList);
 
-app.get("/countries-list", authenticateToken, countriesList);
+app.get("/api/countries-list", authenticateToken, countriesList);
 
-app.post("/edit-page", authenticateToken, editPage);
+app.post("/api/edit-page", authenticateToken, editPage);
 
-app.post("/upload-image", authenticateToken, upload.single("image"), uploadImage);
+app.post("/api/upload-image", authenticateToken, upload.single("image"), uploadImage);
 
-app.get("/image/:id", getImageById);
+app.get("/api/image/:id", getImageById);
 
-app.get("/get-images", authenticateToken, getImages);
+app.get("/api/get-images", authenticateToken, getImages);
 
 // mongoose.connect(process.env.PROD_MONGO_URL, {
 //   useNewUrlParser: true,
