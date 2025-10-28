@@ -50,7 +50,7 @@ app.get("/image/:id", getImageById);
 
 app.get("/get-images", authenticateToken, getImages);
 
-mongoose.connect("mongodb://127.0.0.1:27017/Low_Code_Portal", {
+mongoose.connect(process.env.PROD_MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
