@@ -61,7 +61,7 @@ app.get("/api/get-images", authenticateToken, getImages);
 const connectDB = async () => {
   try {
     console.log("Connecting to MongoDB...");
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.PROD_MONGO_URL);
     console.log("MongoDB connected successfully");
   } catch (err) {
     console.error("MongoDB connection failed:", err.message);
