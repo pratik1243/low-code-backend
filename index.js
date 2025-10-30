@@ -14,6 +14,8 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+app.options("*", cors());
+
 const {
   createPage,
   getIcons,
