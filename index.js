@@ -9,16 +9,10 @@ const authenticateToken = require("./middleware/auth");
 
 app.use(express.json());
 app.use(cors({
-  origin: [
-    "https://low-code-frontend-delta.vercel.app",
-    "http://localhost:3000"
-  ],
+  origin: "https://low-code-frontend-delta.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-app.options("*", cors());
 
 const {
   createPage,
