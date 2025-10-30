@@ -48,7 +48,7 @@ app.post("/api/get-icons", authenticateToken, getIcons);
 
 app.post("/api/get-fonts", authenticateToken, fontsList);
 
-app.get("/api/countries-list", authenticateToken, countriesList);
+app.get("/api/countries-list", countriesList);
 
 app.post("/api/edit-page", authenticateToken, editPage);
 
