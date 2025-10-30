@@ -8,13 +8,13 @@ const serverless = require("serverless-http");
 const authenticateToken = require("./middleware/auth");
 
 app.use(express.json());
-app.use(cors({
-  origin: ["https://low-code-frontend-delta.vercel.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
-app.options("*", cors());
+app.use(
+  cors({
+    origin: ["https://low-code-frontend-delta.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 const {
   createPage,
@@ -58,37 +58,12 @@ app.get("/api/image/:id", getImageById);
 
 app.get("/api/get-images", authenticateToken, getImages);
 
-let isConnected = false;
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+  }).catch((err) => {
+    console.error(err);
+});
 
-async function connectDB() {
-  if (isConnected) return;
-  try {
-    await mongoose.connect(process.env.PROD_MONGO_URL);
-    isConnected = true;
-    console.log("MongoDB Connected");
-  } catch (error) {
-    console.error("DB Error:", error);
-  }
-}
-
-connectDB();
-
-const handler = serverless(app);
-
-module.exports.handler = async (event, context) => {
-  const response = await handler(event, context);
-  response.headers = {
-    ...response.headers,
-    "Access-Control-Allow-Origin": "https://low-code-frontend-delta.vercel.app",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  };
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: response.headers,
-      body: "",
-    };
-  }
-  return response;
-};
+module.exports = app;
+module.exports.handler = serverless(app);
