@@ -7,14 +7,26 @@ const cors = require("cors");
 const serverless = require("serverless-http");
 const authenticateToken = require("./middleware/auth");
 
+const allowedOrigins = ["https://low-code-frontend-pi.vercel.app", "http://localhost:3000"];
+
 app.use(express.json());
 app.use(
   cors({
-    origin: ["https://low-code-frontend-delta.vercel.app", "http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
+
+app.options("*", cors());
 
 const {
   createPage,
