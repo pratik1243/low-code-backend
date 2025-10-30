@@ -73,4 +73,22 @@ async function connectDB() {
 
 connectDB();
 
-module.exports.handler = serverless(app);
+const handler = serverless(app);
+
+module.exports.handler = async (event, context) => {
+  const response = await handler(event, context);
+  response.headers = {
+    ...response.headers,
+    "Access-Control-Allow-Origin": "https://low-code-frontend-delta.vercel.app",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: response.headers,
+      body: "",
+    };
+  }
+  return response;
+};
