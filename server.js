@@ -66,7 +66,7 @@ app.post("/api/edit-page", authenticateToken, editPage);
 
 app.post("/api/upload-image", authenticateToken, upload.single("image"), uploadImage);
 
-app.get("/api/image/:id", authenticateToken, getImageById);
+app.get("/api/image/:id", getImageById);
 
 app.get("/api/get-images", authenticateToken, getImages);
 
