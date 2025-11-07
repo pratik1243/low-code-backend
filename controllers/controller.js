@@ -105,12 +105,10 @@ exports.pageData = async (req, res) => {
         _id: users[0]._id,
         page_id: users[0].page_id,
         page_name: users[0].page_name,
-        font_family: users[0]?.page_data?.font_family,
-        page_data: users[0]?.page_data[req.body.break_point],
+        page_data: users[0].page_data,
       },
     });
   } catch (err) {
-    console.log("errerr", err);
     return res.status(500).json({ error: "server error" });
   }
 };
@@ -127,7 +125,6 @@ exports.pageList = async (req, res) => {
       responseData: users,
     });
   } catch (err) {
-    console.log("errerr", err);
     return res.status(500).json({ error: "server error" });
   }
 };
