@@ -109,7 +109,7 @@ exports.pageData = async (req, res) => {
         field_type: users[0].page_data.field_type,
         page_background: users[0].page_data.page_background,
         scroll_animation_type: users[0].page_data.scroll_animation_type,
-        page_data: req.body.break_point ? users[0].page_data.screenSize[req.body.break_point] : users[0].page_data.screenSize,
+        screenSize: req.body.break_point ? users[0].page_data.screenSize[req.body.break_point] : users[0].page_data.screenSize,
       },
     });
   } catch (err) {
