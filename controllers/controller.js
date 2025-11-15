@@ -106,6 +106,9 @@ exports.pageData = async (req, res) => {
         page_id: users[0].page_id,
         page_name: users[0].page_name,
         font_family: users[0].page_data.font_family,
+        field_type: users[0].page_data.field_type,
+        page_background: users[0].page_data.page_background,
+        scroll_animation_type: users[0].page_data.scroll_animation_type,
         page_data: req.body.break_point ? users[0].page_data.screenSize[req.body.break_point] : users[0].page_data.screenSize,
       },
     });
