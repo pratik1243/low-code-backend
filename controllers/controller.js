@@ -106,7 +106,7 @@ exports.pageData = async (req, res) => {
         page_id: users[0].page_id,
         page_name: users[0].page_name,
         font_family: users[0].page_data.font_family,
-        page_data: req.body.break_point ? users[0].page_data[req.body.break_point] : users[0].page_data,
+        page_data: req.body.break_point ? users[0].page_data.screenSize[req.body.break_point] : users[0].page_data.screenSize,
       },
     });
   } catch (err) {
